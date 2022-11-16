@@ -2,6 +2,8 @@ import HttpStatusCodes from '@src/declarations/major/HttpStatusCodes';
 
 import { IReq, IRes } from './shared/types';
 
+import zeroWallet from '../zero-wallet';
+
 // **** Variables **** //
 
 // Paths
@@ -16,6 +18,7 @@ const paths = {
 
 interface ILoginReq {
   webwallet_address: string;
+  gas_tank_name: string;
 }
 
 
@@ -26,22 +29,44 @@ interface ILoginReq {
  */
 // eslint-disable-next-line @typescript-eslint/require-await
 async function authorize(req: IReq<ILoginReq>, res: IRes) {
-  const { webwallet_address } = req.body;
-  
-  // @TODO: call authorizer.addAuthorizedUser(webwallet_address)
+
+  const { webwallet_address, gas_tank_name } = req.body;
+
+  const gastank = zeroWallet.getGasTank(gas_tank_name);
+
+  if (!gastank) {
+    return res.status(
+      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' },
+    );
+  }
+
+  await gastank.addAuthorizedUser(webwallet_address);
 
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
- * Logout the user.
+ * Get the nonce of an authorized user
  */
-function getNonce(req: IReq<ILoginReq>, res: IRes) {
-  const { webwallet_address } = req.body;
+async function getNonce(req: IReq<ILoginReq>, res: IRes) {
   
-  // @TODO: call authorizer.getNonce(webwallet_address)
+  const { webwallet_address, gas_tank_name } = req.body;
 
-  return res.status(HttpStatusCodes.OK).json({authorize: false});
+  const gasTank = zeroWallet.getGasTank(gas_tank_name);
+
+  if (!gasTank) {
+    return res.status(
+      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' }
+    );
+  }
+
+  const nonce = await gasTank.getNonce(webwallet_address);
+
+  if(!nonce){
+    return res.status(HttpStatusCodes.OK).json({ nonce: 'Token expired' });
+  }
+
+  return res.status(HttpStatusCodes.OK).json({ nonce: nonce });
 }
 
 

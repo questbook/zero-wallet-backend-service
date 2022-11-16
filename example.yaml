@@ -1,0 +1,16 @@
+---
+ databaseConfig:
+      user : "ENTER_USER_HERE"
+      host : "ENTER_HOST_HERE"
+      database: "ENTER_DB_NAME_HERE"
+      password  : "ENTER_PASSWORD_HERE"
+      port: "ENTER_PORT_WITHOUT_QUOTES_HERE"
+      
+ gasTanks:
+   - name: "ENTER_GASTANK_NAME_HERE"
+     apiKey: "ENTER_BICONOMY_API_KEY_HERE"
+     chainId: "ENTER_CHAIN_ID_WITHOUT_QUOTES_HERE"
+     providerURL: "ENTER_PROVIDER_URL_HERE"
+     whiteList:  
+        - "ENTER_CONTRACT_ADDRESS_1_HERE"
+        - "ENTER_CONTRACT_ADDRESS_2_HERE"
