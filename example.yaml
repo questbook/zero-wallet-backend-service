@@ -1,7 +1,7 @@
 ---
  databaseConfig:
       user : "ENTER_USER_HERE"
-      host : "ENTER_HOST_HERE"
+      host : "ENTER_HOST_HERE" # use 'host.docker.internal' in case of connecting to a local database
       database: "ENTER_DB_NAME_HERE"
       password  : "ENTER_PASSWORD_HERE"
       port: "ENTER_PORT_WITHOUT_QUOTES_HERE"

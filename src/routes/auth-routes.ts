@@ -57,7 +57,7 @@ async function getNonce(req: IReq<ILoginReq>, res: IRes) {
 
   if (!gasTank) {
     return res.status(
-      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' }
+      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' },
     );
   }
 
@@ -78,7 +78,7 @@ async function refreshNonce(req: IReq<ILoginReq>, res: IRes) {
 
   if (!gasTank) {
     return res.status(
-      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' }
+      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' },
     );
   }
 
