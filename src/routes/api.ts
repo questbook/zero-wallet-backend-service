@@ -25,6 +25,11 @@ authRouter.post(
   authRoutes.getNonce,
 );
 
+authRouter.post(
+  authRoutes.paths.refreshNonce,
+  authRoutes.refreshNonce,
+);
+
 // Add authRouter
 apiRouter.use(authRoutes.paths.basePath, authRouter);
 
@@ -42,6 +47,11 @@ gaslessRouter.post(
 gaslessRouter.post(
   gaslessRoutes.paths.send,
   gaslessRoutes.send,
+);
+
+gaslessRouter.post(
+  gaslessRoutes.paths.deploy,
+  gaslessRoutes.deploy,
 );
 
 // Add gaslessRouter
