@@ -24,3 +24,8 @@ export type WebHookAttributesType = {
     to: string;
     chainId: number;
 };
+
+export type DeployWebHookAttributesType = {
+    nonce: string;
+    signedNonce: SignedMessage;
+};

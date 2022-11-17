@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@ethersproject/abstract-provider": "^5.7.0",
-    "@hasankhadra/zero-wallet-server": "^1.0.0",
+    "@hasankhadra/zero-wallet-server": "^1.0.1",
     "bcrypt": "^5.1.0",
     "command-line-args": "^5.2.1",
     "cookie-parser": "^1.4.6",

@@ -1,11 +1,13 @@
 import HttpStatusCodes from '@src/declarations/major/HttpStatusCodes';
 
 import { IReq, IRes } from './shared/types';
-import { TransactionRequest } from '@ethersproject/abstract-provider';
 import { 
   BuildExecTransactionType, 
-  WebHookAttributesType 
+  WebHookAttributesType,
+  DeployWebHookAttributesType,
 } from '@src/types/zerowallet';
+
+import zeroWallet from '../zero-wallet';
 
 // **** Variables **** //
 
@@ -14,21 +16,30 @@ const paths = {
   basePath: '/tx',
   send: '/send',
   build: '/build',
+  deploy: '/deploy',
 } as const;
 
 // **** Types **** //
 
 interface IBuildReq {
   zeroWalletAddress: string,
-  data: TransactionRequest,
-  webhookAttributes: WebHookAttributesType
+  data: string,
+  webHookAttributes: WebHookAttributesType,
+  gasTankName: string
 }
 
 interface ISendReq {
   execTransactionBody: BuildExecTransactionType,
-  walletAddress: string,
+  zeroWalletAddress: string,
   signature: string,
-  webHookAttributes: WebHookAttributesType
+  webHookAttributes: WebHookAttributesType,
+  gasTankName: string
+}
+
+interface IDeployReq {
+  zeroWalletAddress: string,
+  gasTankName: string,
+  webHookAttributes: DeployWebHookAttributesType;
 }
 
 // **** Functions **** //
@@ -38,25 +49,20 @@ interface ISendReq {
  */
 // eslint-disable-next-line @typescript-eslint/require-await
 async function build(req: IReq<IBuildReq>, res: IRes) {
-  const { zeroWalletAddress, data, webhookAttributes } = req.body;
+  const { zeroWalletAddress, data, webHookAttributes, gasTankName } = req.body;
   
-  /* @TODO: call gastank.buildTransaction(
+  const gastank = zeroWallet.getGasTank(gasTankName);
+
+  const { safeTXBody, scwAddress } = await gastank.buildTransaction(
     {
       zeroWalletAddress,
-      targetContractAddress: webhookAttributes.to,
       populatedTx: data,
-      webHookAttributes
-    }
-  )
+      webHookAttributes,
+      targetContractAddress: webHookAttributes.to,
+    },
+  );
 
-  return
-  {
-    scwAddress: string,
-    safeTxBody: BuildExecTransactionType
-  }
-  */
-
-  return res.status(HttpStatusCodes.OK).json();
+  return res.status(HttpStatusCodes.OK).json({ safeTXBody, scwAddress });
 }
 
 /**
@@ -64,26 +70,47 @@ async function build(req: IReq<IBuildReq>, res: IRes) {
  */
 // eslint-disable-next-line @typescript-eslint/require-await
 async function send(req: IReq<ISendReq>, res: IRes) {
-  const { execTransactionBody, walletAddress, signature, webHookAttributes} = req.body;
+  const { 
+    execTransactionBody, 
+    zeroWalletAddress, 
+    signature, 
+    webHookAttributes, 
+    gasTankName,
+  } = req.body;
   
-  /*
-    @TODO: call gastank.sendGaslessTransaction(
-      {
-        safeTXBody: BuildExecTransactionType;
-        zeroWalletAddress: string;
-        scwAddress: string;
-        signature: string;
-        webHookAttributes: WebHookAttributesType;
-      }
-    )
+  const gasTank = zeroWallet.getGasTank(gasTankName);
 
-    return 
-    {txHash: string}
-  */
+  const {walletAddress: scwAddress} = await gasTank.doesProxyWalletExist(
+    zeroWalletAddress,
+  );
+
+  const txHash = await gasTank.sendGaslessTransaction(
+    {
+      safeTXBody: execTransactionBody,
+      zeroWalletAddress,
+      scwAddress,
+      signature,
+      webHookAttributes,
+    },
+  );
+  
+  return res.status(HttpStatusCodes.CREATED).json({ txHash });
+}
+
+
+/**
+ * Deploy the smart contract wallet
+ */
+// eslint-disable-next-line @typescript-eslint/require-await
+async function deploy(req: IReq<IDeployReq>, res: IRes) {
+  const { zeroWalletAddress, gasTankName, webHookAttributes } = req.body;
+
+  const gasTank = zeroWallet.getGasTank(gasTankName);
+
+  await gasTank.deployProxyWallet({ zeroWalletAddress, webHookAttributes });
   
   return res.status(HttpStatusCodes.CREATED).end();
 }
-
 
 // **** Export default **** //
 
@@ -91,4 +118,5 @@ export default {
   paths,
   build,
   send,
+  deploy,
 } as const;
