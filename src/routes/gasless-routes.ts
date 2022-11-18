@@ -105,17 +105,11 @@ async function send(req: IReq<ISendReq>, res: IRes) {
 async function deploy(req: IReq<IDeployReq>, res: IRes) {
   const { zeroWalletAddress, gasTankName, webHookAttributes } = req.body;
 
-  const newWebHookAttributes = {
-    ...webHookAttributes,
-    to: 'to_be_removed',
-    chainId: 0,
-  };
-
   const gasTank = zeroWallet.getGasTank(gasTankName);
 
   await gasTank.deployProxyWallet({ 
     zeroWalletAddress, 
-    webHookAttributes: newWebHookAttributes,
+    webHookAttributes,
   });
   
   return res.status(HttpStatusCodes.CREATED).end();
