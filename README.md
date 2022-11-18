@@ -1,6 +1,6 @@
 ## Running the zero wallet backend service
 
-### 1 - Fill in the `example.yaml` file with your own config and rename it to `config.yaml`
+### 1 - Fill in the `config.sample.yaml` file with your own config and rename it to `config.yaml`
 
 ### 2 - Build the docker image:
 
