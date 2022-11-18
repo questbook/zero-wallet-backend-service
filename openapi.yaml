@@ -1,0 +1,441 @@
+openapi: 3.0.1
+info:
+  title: Zero Wallet Backend server
+  version: 0.1.0
+  description: handles requests for ZeroWallet frontend sdk
+servers:
+  - url: https://api-zero-wallet.questbook.app
+    description: Production server
+  - url: http://localhost:3000
+    description: Local server
+paths:
+  /auth/authorize:
+    post:
+      operationId: authorize
+      summary: add the given user as authorized to the database
+      tags:
+        - Authorize
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthorizeResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /auth/getNonce:
+    post:
+      operationId: get_nonce
+      summary: retrieve the nonce for a given user
+      tags:
+        - get_nonce
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetNonceRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetNonceResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /auth/refresh_nonce:
+    post:
+      operationId: refresh_nonce
+      summary: refresh the user's nonce if expired
+      tags:
+        - refresh_nonce
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshNonceRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/RefreshNonceResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /tx/build:
+    post:
+      operationId: build_tx
+      summary: build the give transaction to conform with biconomy approach
+      tags:
+        - build_tx
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildTransactionRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/BuildTransactionResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  
+  /tx/deploy:
+    post:
+      operationId: deploy_scw
+      summary: Deploy the smart contract wallet from biconomy
+      tags:
+        - deploy_scw
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployScwRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/DeployScwRespone'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /tx/send:
+    post:
+      operationId: send
+      summary: Send the given gasless transaciton through biconomy to the blockchain
+      tags:
+        - send_gasless
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendGaslessRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SendGaslessResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  
+components:
+
+  schemas:
+  
+    Error:
+      type: object
+      required:
+        - statusCode
+        - error
+        - message
+      properties:
+        statusCode:
+          type: integer
+          minimum: 200
+          maximum: 505
+        error:
+          type: string
+          description: Specific description of the error
+        message:
+          type: string
+          description: What the error was
+        data:
+          type: object
+          description: Some extra information about the error
+
+    SignedTransaction:
+      type: object
+      additionalProperties: false
+      required:
+        - v
+        - r
+        - s
+        - transactionHash
+      properties:
+        v:
+          type: number
+        r:
+          type: string
+          minLength: 1
+          maxLength: 70
+        s:
+          type: string
+          minLength: 1
+          maxLength: 70
+        transactionHash:
+          type: string
+          minLength: 1
+          maxLength: 256
+
+    ZeroWalletAddressType:
+      type: string
+      minLength: 42
+      maxLength: 42
+
+    GasTankNameType:
+      type: string
+      minLength: 1
+      maxLength: 256
+
+    WebHookAttributesType:
+      type: object
+      additionalProperties: false
+      required:
+        - nonce
+        - signedNonce
+        - to
+        - chain_id
+      properties:
+        signedNonce:
+          $ref: '#/components/schemas/SignedTransaction'
+        nonce:
+          type: string
+          minLength: 1
+          maxLength: 256
+        to:
+          type: string
+          minLength: 1
+          maxLength: 256
+        chain_id: 
+          type: string
+          minLength: 1
+          maxLength: 20
+
+    DeployWebHookAttributesType:
+      type: object
+      additionalProperties: false
+      required:
+        - nonce
+        - signedNonce
+      properties:
+        signedNonce:
+          $ref: '#/components/schemas/SignedTransaction'
+        nonce:
+          type: string
+          minLength: 1
+          maxLength: 256
+
+    ExecTransactionBodyType:
+      type: object
+      additionalProperties: false
+      required:
+        - to
+        - value
+        - data
+        - operation
+        - targetTxGas
+        - baseGas
+        - gasPrice
+        - gasToken
+        - refundReceiver
+        - nonce
+      properties:
+        to:
+          type: string
+          minLength: 1
+          maxLength: 256
+        value:
+          type: number
+        data:
+          type: string
+          minLength: 1
+          maxLength: 256
+        operation:
+          type: number
+        targetTxGas:
+          type: number
+        baseGas:
+          type: number
+        gasPrice:
+          type: number
+        gasToken:
+          type: string
+          minLength: 1
+          maxLength: 256
+        refundReceiver:
+          type: string
+          minLength: 1
+          maxLength: 256
+        nonce:
+          type: number
+
+    AuthGenericRequestType:
+      type: object
+      additionalProperties: false
+      required:
+        - zeroWalletAddress
+        - gasTankName
+      properties:
+        zeroWalletAddress:
+          $ref: '#/components/schemas/ZeroWalletAddressType'
+        gasTankName:
+          $ref: '#/components/schemas/GasTankNameType'
+
+    TOUSE:
+      type: object
+      additionalProperties: false
+      required:
+        # - code
+        - webwallet_address
+      properties: 
+        # code:
+        #   type: string
+        #   minLength: 1
+        #   maxLength: 100
+        webwallet_address:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    TOUSE:
+      type: object
+      additionalProperties: false
+      required:
+        - webwallet_address
+      properties: 
+        webwallet_address:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    AuthorizeRequest:
+      $ref: '#/components/schemas/AuthGenericRequestType'
+
+    GetNonceRequest:
+      $ref: '#/components/schemas/AuthGenericRequestType'
+    
+    RefreshNonceRequest:
+      $ref: '#/components/schemas/AuthGenericRequestType'
+    
+    BuildTransactionRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - zeroWalletAddress
+        - data
+        - webHookAttributes
+        - gasTankName
+      properties: 
+        zeroWalletAddress:
+          $ref: '#/components/schemas/ZeroWalletAddressType'
+        gasTankName:
+          $ref: '#/components/schemas/GasTankNameType'
+        webHookAttributes:
+          $ref: '#/components/schemas/WebHookAttributesType'
+        data: 
+          type: string
+
+    DeployScwRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - zeroWalletAddress
+        - gasTankName
+        - deployWebHookAttributes
+      properties: 
+        zeroWalletAddress:
+          $ref: '#/components/schemas/ZeroWalletAddressType'
+        gasTankName:
+          $ref: '#/components/schemas/GasTankNameType'
+        deployWebHookAttributes:
+          $ref: '#/components/schemas/DeployWebHookAttributesType'
+
+    SendGaslessRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - zeroWalletAddress
+        - gasTankName
+        - signature
+        - webHookAttributes
+        - execTransactionBody
+      properties:
+        zeroWalletAddress:
+          $ref: '#/components/schemas/ZeroWalletAddressType'
+        gasTankName:
+          $ref: '#/components/schemas/GasTankNameType'
+        signature:
+          type: string
+        webHookAttributes:
+          $ref: '#/components/schemas/WebHookAttributesType'
+        execTransactionBody:
+          $ref: '#/components/schemas/ExecTransactionBodyType'
+        
+  responses:
+
+    AuthorizeResponse:
+      description: Authorize response
+        
+    GetNonceResponse:
+      description: Get nonce for the user to sign
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - nonce
+            properties: 
+              nonce:
+                type: string
+                minLength: 1
+                maxLength: 200
+  
+    RefreshNonceResponse:
+      description: Refresh the nonce of the user
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - nonce
+            properties: 
+              nonce:
+                type: string
+                minLength: 1
+                maxLength: 200
+
+    BuildTransactionResponse:
+      description: Build transaction to conform with biconomy
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - scwAddress
+              - safeTXBody
+            properties: 
+              scwAddress:
+                $ref: '#/components/schemas/ZeroWalletAddressType'
+              safeTXBody:
+                $ref: '#/components/schemas/ExecTransactionBodyType'
+
+    SendGaslessRespone:
+      description: Contains the hash of the gasless transaction 
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - txHash
+            properties: 
+              txHash:
+                type: string
+                
+    DeployScwResponse:
+      description: Deploys the SCW for a given zero wallet
+      
+    ErrorResponse:
+      description: Generic error response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

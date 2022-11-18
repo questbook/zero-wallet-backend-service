@@ -1,11 +1,11 @@
 import HttpStatusCodes from '@src/declarations/major/HttpStatusCodes';
-
-import { IReq, IRes } from './shared/types';
 import { 
-  BuildExecTransactionType, 
   WebHookAttributesType,
-  DeployWebHookAttributesType,
-} from '@src/types/zerowallet';
+  BuildExecTransactionType,
+} from '@hasankhadra/zero-wallet-server/build/main/types';
+
+import { DeployWebHookAttributesType } from '@src/types/zerowallet';
+import { IReq, IRes } from './shared/types';
 
 import zeroWallet from '../zero-wallet';
 
@@ -39,7 +39,7 @@ interface ISendReq {
 interface IDeployReq {
   zeroWalletAddress: string,
   gasTankName: string,
-  webHookAttributes: DeployWebHookAttributesType;
+  webHookAttributes: DeployWebHookAttributesType,
 }
 
 // **** Functions **** //
@@ -47,7 +47,6 @@ interface IDeployReq {
 /**
  * Get all users.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function build(req: IReq<IBuildReq>, res: IRes) {
   const { zeroWalletAddress, data, webHookAttributes, gasTankName } = req.body;
   
@@ -68,7 +67,6 @@ async function build(req: IReq<IBuildReq>, res: IRes) {
 /**
  * Send gasless transaction.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function send(req: IReq<ISendReq>, res: IRes) {
   const { 
     execTransactionBody, 
@@ -101,7 +99,6 @@ async function send(req: IReq<ISendReq>, res: IRes) {
 /**
  * Deploy the smart contract wallet
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function deploy(req: IReq<IDeployReq>, res: IRes) {
   const { zeroWalletAddress, gasTankName, webHookAttributes } = req.body;
 

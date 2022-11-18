@@ -28,7 +28,6 @@ interface IAuthReq {
 /**
  * Add an authorized user to the database
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function authorize(req: IReq<IAuthReq>, res: IRes) {
 
   const { zeroWalletAddress, gasTankName } = req.body;
