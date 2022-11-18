@@ -17,7 +17,7 @@ const paths = {
 
 // **** Types **** //
 
-interface ILoginReq {
+interface IAuthReq {
   zeroWalletAddress: string;
   gasTankName: string;
 }
@@ -29,7 +29,7 @@ interface ILoginReq {
  * Add an authorized user to the database
  */
 // eslint-disable-next-line @typescript-eslint/require-await
-async function authorize(req: IReq<ILoginReq>, res: IRes) {
+async function authorize(req: IReq<IAuthReq>, res: IRes) {
 
   const { zeroWalletAddress, gasTankName } = req.body;
 
@@ -49,7 +49,7 @@ async function authorize(req: IReq<ILoginReq>, res: IRes) {
 /**
  * Get the nonce of an authorized user
  */
-async function getNonce(req: IReq<ILoginReq>, res: IRes) {
+async function getNonce(req: IReq<IAuthReq>, res: IRes) {
 
   const { zeroWalletAddress, gasTankName } = req.body;
 
@@ -70,7 +70,7 @@ async function getNonce(req: IReq<ILoginReq>, res: IRes) {
   return res.status(HttpStatusCodes.OK).json({ nonce: nonce });
 }
 
-async function refreshNonce(req: IReq<ILoginReq>, res: IRes) {
+async function refreshNonce(req: IReq<IAuthReq>, res: IRes) {
 
   const { zeroWalletAddress, gasTankName } = req.body;
 
