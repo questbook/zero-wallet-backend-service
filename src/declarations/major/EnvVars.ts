@@ -2,11 +2,7 @@
 
 export default {
   nodeEnv: (process.env.NODE_ENV ?? ''),
-  ports: [
-    process.env.PORT ?? 0, 
-    process.env.PORT_2 ?? 0, 
-    process.env.PORT_3 ?? 0,
-  ],
+  port: process.env.PORT ?? 0, 
   cookieProps: {
     key: 'ExpressGeneratorTs',
     secret: (process.env.COOKIE_SECRET ?? ''),

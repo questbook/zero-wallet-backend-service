@@ -1,14 +1,18 @@
 openapi: 3.0.1
+
 info:
   title: Zero Wallet Backend server
   version: 0.1.0
   description: handles requests for ZeroWallet frontend sdk
+
 servers:
   - url: https://api-zero-wallet.questbook.app
     description: Production server
   - url: http://localhost:3000
     description: Local server
+
 paths:
+
   /auth/authorize:
     post:
       operationId: authorize
