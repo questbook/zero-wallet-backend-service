@@ -18,7 +18,7 @@ paths:
       operationId: authorize
       summary: add the given user as authorized to the database
       tags:
-        - Authorize
+        - Auth
       requestBody:
         content:
           application/json:
@@ -37,7 +37,7 @@ paths:
       operationId: get_nonce
       summary: retrieve the nonce for a given user
       tags:
-        - get_nonce
+        - Auth
       requestBody:
         content:
           application/json:
@@ -56,7 +56,7 @@ paths:
       operationId: refresh_nonce
       summary: refresh the user's nonce if expired
       tags:
-        - refresh_nonce
+        - Auth
       requestBody:
         content:
           application/json:
@@ -75,7 +75,7 @@ paths:
       operationId: build_tx
       summary: build the give transaction to conform with biconomy approach
       tags:
-        - build_tx
+        - PreProcess
       requestBody:
         content:
           application/json:
@@ -94,7 +94,7 @@ paths:
       operationId: deploy_scw
       summary: Deploy the smart contract wallet from biconomy
       tags:
-        - deploy_scw
+        - OnChain
       requestBody:
         content:
           application/json:
@@ -113,7 +113,7 @@ paths:
       operationId: send
       summary: Send the given gasless transaciton through biconomy to the blockchain
       tags:
-        - send_gasless
+        - OnChain
       requestBody:
         content:
           application/json:
