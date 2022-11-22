@@ -1,15 +1,22 @@
 ## Running the zero wallet backend service
 
-### 1 - Fill in the `config.sample.yaml` file with your own config and rename it to `config.yaml`
+### 1 - Clone this repo and cd into it
 
-### 2 - Build the docker image:
+```
+    git clone https://github.com/questbook/zero-wallet-backend-service.git
+    cd zero-wallet-backend-service
+```
+
+### 2 - Fill in the `config.sample.yaml` file with your own config and rename it to `config.yaml`
+
+### 3 - Build the docker image:
 
 ```
     docker build . -t zero-wallet-backend-service
 ```
 
-### 3 - Then run the container:
+### 4 - Then run the container:
 
 ```
-    docker run -p 3000:3000 -p 80:80 -p 443:443 zero-wallet-backend-service
+    docker run -p 3000:3000 zero-wallet-backend-service
 ```
