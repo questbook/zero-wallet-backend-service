@@ -35,7 +35,7 @@ const isWebHookAttributes = (
 
   if(typeof attributes?.signedNonce?.transactionHash !== 'string') {
     throw new Error(
-      'WebHookAttributes.signedNonce.transactionHash is not a string'
+      'WebHookAttributes.signedNonce.transactionHash is not a string',
     );
   } 
 
@@ -109,23 +109,8 @@ const isBuildExecTransaction = (
     throw new Error('BuildExecTransaction.targetTxGas is not a number');
   }
 
+  return true;
 
-
-  return (
-    !!attributes &&
-      typeof attributes === 'object' &&
-      typeof attributes?.to === 'string' &&
-      typeof attributes?.value === 'number' &&
-      typeof attributes?.data === 'string' &&
-      typeof attributes?.operation === 'number' &&
-      typeof attributes?.targetTxGas === 'number' &&
-      typeof attributes?.baseGas === 'number' &&
-      typeof attributes?.gasPrice === 'number' &&
-      typeof attributes?.gasToken === 'string' &&
-      typeof attributes?.refundReceiver === 'string' &&
-      typeof attributes?.nonce === 'number'
-  );
-
-}
+};
 
 export { isWebHookAttributes, isBuildExecTransaction };
