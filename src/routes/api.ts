@@ -86,7 +86,7 @@ gaslessRouter.post(
     .isString()
     .isLength({ min: 42, max: 42 }),
   body('gasTankName').isString(),
-  body('to').isString(),
+  body('data').isString(),
   body('webHookAttributes').custom(isWebHookAttributes),
   (req: express.Request, res: express.Response) => {
     
@@ -119,7 +119,6 @@ gaslessRouter.post(
     return gaslessRoutes.send(req, res);
   },
 );
-
 
 // deploy transaction route
 gaslessRouter.post(

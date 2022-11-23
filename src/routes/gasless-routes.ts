@@ -45,14 +45,20 @@ interface IDeployReq {
 // **** Functions **** //
 
 /**
- * Get all users.
+ * Build the gasless transaction
  */
 async function build(req: IReq<IBuildReq>, res: IRes) {
   const { zeroWalletAddress, data, webHookAttributes, gasTankName } = req.body;
   
-  const gastank = zeroWallet.getGasTank(gasTankName);
+  const gasTank = zeroWallet.getGasTank(gasTankName);
 
-  const { safeTXBody, scwAddress } = await gastank.buildTransaction(
+  if (!gasTank) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
+    );
+  }
+
+  const { safeTXBody, scwAddress } = await gasTank.buildTransaction(
     {
       zeroWalletAddress,
       populatedTx: data,
@@ -77,6 +83,12 @@ async function send(req: IReq<ISendReq>, res: IRes) {
   } = req.body;
   
   const gasTank = zeroWallet.getGasTank(gasTankName);
+
+  if (!gasTank) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
+    );
+  }
 
   const {walletAddress: scwAddress} = await gasTank.doesProxyWalletExist(
     zeroWalletAddress,
@@ -103,6 +115,12 @@ async function deploy(req: IReq<IDeployReq>, res: IRes) {
   const { zeroWalletAddress, gasTankName, webHookAttributes } = req.body;
 
   const gasTank = zeroWallet.getGasTank(gasTankName);
+
+  if (!gasTank) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
+    );
+  }
 
   await gasTank.deployProxyWallet({ 
     zeroWalletAddress, 

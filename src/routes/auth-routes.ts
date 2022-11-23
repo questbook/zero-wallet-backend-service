@@ -35,8 +35,8 @@ async function authorize(req: IReq<IAuthReq>, res: IRes) {
   const gastank = zeroWallet.getGasTank(gasTankName);
 
   if (!gastank) {
-    return res.status(
-      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' },
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
     );
   }
 
@@ -55,8 +55,8 @@ async function getNonce(req: IReq<IAuthReq>, res: IRes) {
   const gasTank = zeroWallet.getGasTank(gasTankName);
 
   if (!gasTank) {
-    return res.status(
-      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' },
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
     );
   }
 
@@ -76,8 +76,8 @@ async function refreshNonce(req: IReq<IAuthReq>, res: IRes) {
   const gasTank = zeroWallet.getGasTank(gasTankName);
 
   if (!gasTank) {
-    return res.status(
-      HttpStatusCodes.BAD_REQUEST).json({ error: 'Gas tank not found' },
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
     );
   }
 
