@@ -1,4 +1,6 @@
-import { isBuildExecTransaction, isWebHookAttributes } from '@src/util/zerowallet-validator';
+import { 
+  isBuildExecTransaction, 
+  isWebHookAttributes } from '@src/util/zerowallet-validator';
 import express, { Router } from 'express';
 
 import { body, validationResult } from 'express-validator';
