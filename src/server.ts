@@ -11,7 +11,7 @@ import EnvVars from '@src/declarations/major/EnvVars';
 import HttpStatusCodes from '@src/declarations/major/HttpStatusCodes';
 import { NodeEnvs } from '@src/declarations/enums';
 import { RouteError } from '@src/declarations/classes';
-
+import cors from 'cors';
 
 // **** Init express **** //
 
@@ -20,6 +20,8 @@ const app = express();
 
 // **** Set basic express settings **** //
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+app.use(cors({origin: "*"}));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser(EnvVars.cookieProps.secret));

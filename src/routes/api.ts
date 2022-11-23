@@ -1,14 +1,13 @@
-import { Router } from 'express';
+import { isBuildExecTransaction, isWebHookAttributes } from '@src/util/zerowallet-validator';
+import express, { Router } from 'express';
 
-import jetValidator from 'jet-validator/dist/jet-validator';
+import { body, validationResult } from 'express-validator';
 
 import authRoutes from './auth-routes';
 import gaslessRoutes from './gasless-routes';
 
-
 // **** Init **** //
 
-const validate = jetValidator();
 
 const apiRouter = Router();
 
@@ -17,66 +16,126 @@ const apiRouter = Router();
 
 const authRouter = Router();
 
-// Authorize user route
+// authorize user route
 authRouter.post(
   authRoutes.paths.authorize,
-  validate("zeroWalletAddress", "gasTankName"),
-  authRoutes.authorize,
+  body('zeroWalletAddress')
+    .isString()
+    .isLength({ min: 42, max: 42 }),
+  body('gasTankName').isString(),
+  (req: express.Request, res: express.Response) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    return authRoutes.authorize(req, res);
+  },
 );
 
-// Get Nonce route
+// get Nonce route
 authRouter.post(
   authRoutes.paths.getNonce, 
-  validate("zeroWalletAddress", "gasTankName"),
-  authRoutes.getNonce,
+  body('zeroWalletAddress')
+    .isString()
+    .isLength({ min: 42, max: 42 }),
+  body('gasTankName').isString(),
+  (req: express.Request, res: express.Response) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    return authRoutes.getNonce(req, res);
+  },
 );
 
+// refresh Nonce route
 authRouter.post(
   authRoutes.paths.refreshNonce,
-  validate("zeroWalletAddress", "gasTankName"),
-  authRoutes.refreshNonce,
+  body('zeroWalletAddress')
+    .isString()
+    .isLength({ min: 42, max: 42 }),
+  body('gasTankName').isString(),
+  (req: express.Request, res: express.Response) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    return authRoutes.refreshNonce(req, res);
+  },
 );
 
-// Add authRouter
+// add authRouter
 apiRouter.use(authRoutes.paths.basePath, authRouter);
 
 
 // **** Setup gasless routes **** //
 const gaslessRouter = Router();
 
-// Add build transaction route
+// build transaction route
 gaslessRouter.post(
   gaslessRoutes.paths.build, 
-  validate(
-    "zeroWalletAddress", 
-    "data", 
-    "webHookAttributes", 
-    "gasTankName",
-  ),
-  gaslessRoutes.build,
+  body('zeroWalletAddress')
+    .isString()
+    .isLength({ min: 42, max: 42 }),
+  body('gasTankName').isString(),
+  body('to').isString(),
+  body('webHookAttributes').custom(isWebHookAttributes),
+  (req: express.Request, res: express.Response) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    return gaslessRoutes.build(req, res);
+  },
 );
 
-// Add send transaction route
+// send transaction route
 gaslessRouter.post(
   gaslessRoutes.paths.send,
-  validate(
-    "zeroWalletAddress", 
-    "signature", 
-    "webHookAttributes", 
-    "gasTankName", 
-    "execTransactionBody",
-  ),
-  gaslessRoutes.send,
+  body('zeroWalletAddress')
+    .isString()
+    .isLength({ min: 42, max: 42 }),
+  body('signature').isString(),
+  body('gasTankName').isString(),
+  body('webHookAttributes').custom(isWebHookAttributes),
+  body('execTransactionBody').custom(isBuildExecTransaction),
+  (req: express.Request, res: express.Response) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    return gaslessRoutes.send(req, res);
+  },
 );
 
+
+// deploy transaction route
 gaslessRouter.post(
   gaslessRoutes.paths.deploy,
-  validate(
-    "zeroWalletAddress",
-    "gasTankName",
-    "webHookAttributes",
-  ),
-  gaslessRoutes.deploy,
+  body('zeroWalletAddress')
+    .isString()
+    .isLength({ min: 42, max: 42 }),
+  body('gasTankName').isString(),
+  body('webHookAttributes').custom(isWebHookAttributes),
+  (req: express.Request, res: express.Response) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    return gaslessRoutes.deploy(req, res);
+  },
 );
 
 // Add gaslessRouter
