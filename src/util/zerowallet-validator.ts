@@ -1,5 +1,6 @@
 import { 
   BuildExecTransactionType,
+  DeployWebHookAttributesType,
   SignedMessage,
   WebHookAttributesType,
 } from '@hasankhadra/zero-wallet-server/build/main/types';
@@ -53,6 +54,47 @@ const isWebHookAttributes = (
 
   return true;
   
+};
+const isDeployWebHookAttributes = (
+  attributes: { 
+    [key: string]: SignedMessage | string 
+  }): attributes is DeployWebHookAttributesType => {
+
+  if(!attributes) {
+    throw new Error('WebHookAttributes is undefined');
+  }
+  
+  if(typeof attributes !== 'object') {
+    throw new Error('WebHookAttributes is not an object');
+  }
+
+  if(typeof attributes?.nonce !== 'string') {
+    throw new Error('WebHookAttributes.nonce is not a string');
+  }
+  
+  if(typeof attributes?.signedNonce !== 'object') {
+    throw new Error('WebHookAttributes.signedNonce is not an object');
+  }
+  
+  if(typeof attributes?.signedNonce?.transactionHash !== 'string') {
+    throw new Error(
+      'WebHookAttributes.signedNonce.transactionHash is not a string',
+    );
+  } 
+  
+  if(typeof attributes?.signedNonce?.r !== 'string') {
+    throw new Error('WebHookAttributes.signedNonce.r is not a string');
+  }
+  
+  if(typeof attributes?.signedNonce?.s !== 'string') {
+    throw new Error('WebHookAttributes.signedNonce.s is not a string');
+  }
+  
+  if(typeof attributes?.signedNonce?.v !== 'number') {
+    throw new Error('WebHookAttributes.signedNonce.v is not a number');
+  }
+  
+  return true;
 };
 
 const isBuildExecTransaction = (
@@ -113,4 +155,8 @@ const isBuildExecTransaction = (
 
 };
 
-export { isWebHookAttributes, isBuildExecTransaction };
+export { 
+  isWebHookAttributes, 
+  isBuildExecTransaction, 
+  isDeployWebHookAttributes,
+};

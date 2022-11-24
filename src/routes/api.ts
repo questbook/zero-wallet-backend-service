@@ -1,6 +1,8 @@
 import { 
   isBuildExecTransaction, 
-  isWebHookAttributes } from '@src/util/zerowallet-validator';
+  isWebHookAttributes,
+  isDeployWebHookAttributes,
+} from '@src/util/zerowallet-validator';
 import express, { Router } from 'express';
 
 import { body, validationResult } from 'express-validator';
@@ -127,7 +129,7 @@ gaslessRouter.post(
     .isString()
     .isLength({ min: 42, max: 42 }),
   body('gasTankName').isString(),
-  body('webHookAttributes').custom(isWebHookAttributes),
+  body('webHookAttributes').custom(isDeployWebHookAttributes),
   (req: express.Request, res: express.Response) => {
     
     const errors = validationResult(req);
