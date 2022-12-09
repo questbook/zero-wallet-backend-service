@@ -1,16 +1,3 @@
-export type BuildExecTransactionType = {
-    to: string;
-    value: number;
-    data: string;
-    operation: number;
-    targetTxGas: number;
-    baseGas: number;
-    gasPrice: number;
-    gasToken: string;
-    refundReceiver: string;
-    nonce: number;
-};
-
 export type SignedMessage = {
     transactionHash: string;
     r: string;
@@ -18,9 +5,7 @@ export type SignedMessage = {
     v: number;
 };
 
-export type WebHookAttributesType = {
+export type DeployWebHookAttributesType = {
     nonce: string;
     signedNonce: SignedMessage;
-    to: string;
-    chainId: number;
 };

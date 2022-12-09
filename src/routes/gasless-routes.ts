@@ -1,11 +1,13 @@
 import HttpStatusCodes from '@src/declarations/major/HttpStatusCodes';
-
-import { IReq, IRes } from './shared/types';
-import { TransactionRequest } from '@ethersproject/abstract-provider';
 import { 
-  BuildExecTransactionType, 
-  WebHookAttributesType 
-} from '@src/types/zerowallet';
+  WebHookAttributesType,
+  BuildExecTransactionType,
+} from '@hasankhadra/zero-wallet-server/build/main/types';
+
+import { DeployWebHookAttributesType } from '@src/types/zerowallet';
+import { IReq, IRes } from './shared/types';
+
+import zeroWallet from '../zero-wallet';
 
 // **** Variables **** //
 
@@ -14,76 +16,119 @@ const paths = {
   basePath: '/tx',
   send: '/send',
   build: '/build',
+  deploy: '/deploy',
 } as const;
 
 // **** Types **** //
 
 interface IBuildReq {
   zeroWalletAddress: string,
-  data: TransactionRequest,
-  webhookAttributes: WebHookAttributesType
+  data: string,
+  webHookAttributes: WebHookAttributesType,
+  gasTankName: string
 }
 
 interface ISendReq {
   execTransactionBody: BuildExecTransactionType,
-  walletAddress: string,
+  zeroWalletAddress: string,
   signature: string,
-  webHookAttributes: WebHookAttributesType
+  webHookAttributes: WebHookAttributesType,
+  gasTankName: string
+}
+
+interface IDeployReq {
+  zeroWalletAddress: string,
+  gasTankName: string,
+  webHookAttributes: DeployWebHookAttributesType,
 }
 
 // **** Functions **** //
 
 /**
- * Get all users.
+ * Build the gasless transaction
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function build(req: IReq<IBuildReq>, res: IRes) {
-  const { zeroWalletAddress, data, webhookAttributes } = req.body;
+  const { zeroWalletAddress, data, webHookAttributes, gasTankName } = req.body;
   
-  /* @TODO: call gastank.buildTransaction(
+  const gasTank = zeroWallet.getGasTank(gasTankName);
+
+  if (!gasTank) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
+    );
+  }
+
+  const { safeTXBody, scwAddress } = await gasTank.buildTransaction(
     {
       zeroWalletAddress,
-      targetContractAddress: webhookAttributes.to,
       populatedTx: data,
-      webHookAttributes
-    }
-  )
+      webHookAttributes,
+      targetContractAddress: webHookAttributes.to,
+    },
+  );
 
-  return
-  {
-    scwAddress: string,
-    safeTxBody: BuildExecTransactionType
-  }
-  */
-
-  return res.status(HttpStatusCodes.OK).json();
+  return res.status(HttpStatusCodes.OK).json({ safeTXBody, scwAddress });
 }
 
 /**
  * Send gasless transaction.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function send(req: IReq<ISendReq>, res: IRes) {
-  const { execTransactionBody, walletAddress, signature, webHookAttributes} = req.body;
+  const { 
+    execTransactionBody, 
+    zeroWalletAddress, 
+    signature, 
+    webHookAttributes, 
+    gasTankName,
+  } = req.body;
   
-  /*
-    @TODO: call gastank.sendGaslessTransaction(
-      {
-        safeTXBody: BuildExecTransactionType;
-        zeroWalletAddress: string;
-        scwAddress: string;
-        signature: string;
-        webHookAttributes: WebHookAttributesType;
-      }
-    )
+  const gasTank = zeroWallet.getGasTank(gasTankName);
 
-    return 
-    {txHash: string}
-  */
+  if (!gasTank) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
+    );
+  }
+
+  const {walletAddress: scwAddress} = await gasTank.doesProxyWalletExist(
+    zeroWalletAddress,
+  );
+
+  const txHash = await gasTank.sendGaslessTransaction(
+    {
+      safeTXBody: execTransactionBody,
+      zeroWalletAddress,
+      scwAddress,
+      signature,
+      webHookAttributes,
+    },
+  );
+  
+  return res.status(HttpStatusCodes.CREATED).json({ txHash });
+}
+
+
+/**
+ * Deploy the smart contract wallet
+ */
+async function deploy(req: IReq<IDeployReq>, res: IRes) {
+  const { zeroWalletAddress, gasTankName, webHookAttributes } = req.body;
+
+  const gasTank = zeroWallet.getGasTank(gasTankName);
+
+  if (!gasTank) {
+    return res.status(HttpStatusCodes.BAD_REQUEST).json(
+      { error: `Gas tank '${gasTankName}' not found` },
+    );
+  }
+
+  await gasTank.deployProxyWallet({ 
+    zeroWalletAddress, 
+    webHookAttributes,
+  });
   
   return res.status(HttpStatusCodes.CREATED).end();
 }
-
 
 // **** Export default **** //
 
@@ -91,4 +136,5 @@ export default {
   paths,
   build,
   send,
+  deploy,
 } as const;

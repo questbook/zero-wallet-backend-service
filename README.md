@@ -1,43 +1,22 @@
-## About
+## Running the zero wallet backend service
 
-This project was created with [express-generator-typescript](https://github.com/seanpmaxwell/express-generator-typescript).
+### 1 - Clone this repo and cd into it
 
+```
+    git clone https://github.com/questbook/zero-wallet-backend-service.git
+    cd zero-wallet-backend-service
+```
 
-## Available Scripts
+### 2 - Fill in the `config.sample.yaml` file with your own config and rename it to `config.yaml`
 
-### `npm run dev`
+### 3 - Build the docker image:
 
-Run the server in development mode.
+```
+    docker build . -t zero-wallet-backend-service
+```
 
-### `npm test`
+### 4 - Then run the container:
 
-Run all unit-tests with hot-reloading.
-
-### `npm test -- --testFile="name of test file" (i.e. --testFile=Users).`
-
-Run a single unit-test.
-
-### `npm run test:no-reloading`
-
-Run all unit-tests without hot-reloading.
-
-### `npm run lint`
-
-Check for linting errors.
-
-### `npm run build`
-
-Build the project for production.
-
-### `npm start`
-
-Run the production build (Must be built first).
-
-### `npm start -- --env="name of env file" (default is production).`
-
-Run production build with a different env file.
-
-
-## Additional Notes
-
-- If `npm run dev` gives you issues with bcrypt on MacOS you may need to run: `npm rebuild bcrypt --build-from-source`. 
+```
+    docker run -p 3000:3000 zero-wallet-backend-service
+```
