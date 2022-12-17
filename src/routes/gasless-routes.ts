@@ -122,12 +122,12 @@ async function deploy(req: IReq<IDeployReq>, res: IRes) {
     );
   }
 
-  await gasTank.deployProxyWallet({ 
+  const scwAddress = await gasTank.deployProxyWallet({ 
     zeroWalletAddress, 
     webHookAttributes,
   });
   
-  return res.status(HttpStatusCodes.CREATED).end();
+  return res.status(HttpStatusCodes.CREATED).json({ scwAddress });
 }
 
 // **** Export default **** //
